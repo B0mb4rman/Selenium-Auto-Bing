@@ -11,6 +11,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.time.Duration;
+import java.util.List;
 
 public class MainPageTest {
     private WebDriver driver;
@@ -40,7 +41,24 @@ public class MainPageTest {
         searchField.submit();
 
         WebElement searchPageField = driver.findElement(By.cssSelector("#sb_form_q"));
-        assertEquals("QA auto", searchPageField.getAttribute("value"));
+        assertEquals(input, searchPageField.getAttribute("value"));
     }
+
+    @Test
+    public void TestResults() {
+        String input = "Selenium";
+        WebElement searchField = driver.findElement(By.cssSelector("#sb_form_q"));
+        searchField.sendKeys(input);
+        searchField.submit();
+        List<WebElement> results = driver.findElements(By.cssSelector("#b_results > li.b_algo.b_vtl_deeplinks > div.b_title > h2 > a"));
+        clickElement(results, 0);
+        String current = driver.getCurrentUrl();
+        String expected = "https://www.selenium.dev/";
+        assertEquals(expected, current);
+    }
+   public void clickElement(List<WebElement> results, int num) {
+       results.get(num).click();
+       System.out.println("Selenium");
+     }
 
 }
