@@ -1,5 +1,7 @@
-package com.example.testbing;
+package com.example.testbing.tests;
 
+import com.example.testbing.pages.MainPage;
+import com.example.testbing.pages.ResultsPage;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,7 +19,7 @@ import java.util.ArrayList;
 import java.time.Duration;
 import java.util.List;
 
-public class MainPageTest {
+public class BingSearchTest {
     private WebDriver driver;
 
     @BeforeEach
@@ -38,46 +40,35 @@ public class MainPageTest {
     }
 
     @Test
-    public void search() {
+    public void searchResultTest() {
         String input = "QA auto";
-        WebElement searchField = driver.findElement(By.cssSelector("#sb_form_q"));
-        searchField.sendKeys(input);
-        searchField.submit();
+        MainPage mp = new MainPage(driver);
+        mp.sendText(input);
 
-        WebElement searchPageField = driver.findElement(By.cssSelector("#sb_form_q"));
-        assertEquals(input, searchPageField.getAttribute("value"));
+        ResultsPage rp = new ResultsPage(driver);
+
+        assertEquals(input, rp.getTextFromSearchField(), "текст не совпал");
     }
 
     @Test
-    public void TestResults() {
+    public void TestResultsField() {
         String input = "Selenium";
-        WebElement searchField = driver.findElement(By.cssSelector("#sb_form_q"));
-        searchField.sendKeys(input);
-        searchField.submit();
-
+        MainPage mp = new MainPage(driver);
+        mp.sendText(input);
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(6));
         wait.until(ExpectedConditions.and(
                 ExpectedConditions.attributeContains(By.cssSelector("h2 > a[href]"), "href", "selenium"),
                 ExpectedConditions.elementToBeClickable(By.cssSelector("h2 > a[href]"))
         ));
-        List<WebElement> results = driver.findElements(By.cssSelector("h2 > a[href]"));
-        clickElement(results, 0);
 
+        ResultsPage rp = new ResultsPage(driver);
+        rp.clickElement(0);
         ArrayList<String> tabs = new ArrayList<> (driver.getWindowHandles());
         driver.switchTo().window(tabs.get(1));
         WebDriverWait waitTwo = new WebDriverWait(driver, Duration.ofSeconds(3));
         waitTwo.until(ExpectedConditions.urlContains("selenium.dev"));
-
-
         String expected = "https://www.selenium.dev/";
         assertEquals(expected, driver.getCurrentUrl());
 
     }
-
-
-    public void clickElement(List<WebElement> results, int num) {
-        results.get(num).click();
-        System.out.println("Selenium");
-    }
-
 }
