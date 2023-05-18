@@ -6,10 +6,8 @@ import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -17,7 +15,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.util.ArrayList;
 
 import java.time.Duration;
-import java.util.List;
 
 public class BingSearchTest {
     private WebDriver driver;
@@ -52,23 +49,15 @@ public class BingSearchTest {
 
     @Test
     public void TestResultsField() {
-        String input = "Selenium";
+        String input = "selenium";
         MainPage mp = new MainPage(driver);
         mp.sendText(input);
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(6));
-        wait.until(ExpectedConditions.and(
-                ExpectedConditions.attributeContains(By.cssSelector("h2 > a[href]"), "href", "selenium"),
-                ExpectedConditions.elementToBeClickable(By.cssSelector("h2 > a[href]"))
-        ));
 
         ResultsPage rp = new ResultsPage(driver);
-        rp.clickElement(0);
-        ArrayList<String> tabs = new ArrayList<> (driver.getWindowHandles());
-        driver.switchTo().window(tabs.get(1));
-        WebDriverWait waitTwo = new WebDriverWait(driver, Duration.ofSeconds(3));
-        waitTwo.until(ExpectedConditions.urlContains("selenium.dev"));
+        rp.goToUrl(0, input);
+
         String expected = "https://www.selenium.dev/";
-        assertEquals(expected, driver.getCurrentUrl());
+        assertEquals(expected, rp.getCurrentUrlOfResult(input));
 
     }
 }
